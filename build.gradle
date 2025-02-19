@@ -1,21 +1,27 @@
 plugins {
-	id 'fabric-loom' version '1.8-SNAPSHOT'
+	id 'dev.architectury.loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = "$project.mod_version+mc${project.minecraft_version}"
 group = project.maven_group
+
+repositories {
+	maven {
+		name = 'NeoForged'
+		url = 'https://maven.neoforged.net/releases'
+	}
+}
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings loom.layered {
+		it.mappings("net.fabricmc:yarn:$project.yarn_mappings:v2")
+		it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$project.yarn_patch")
+	}
+	neoForge "net.neoforged:neoforge:$project.neoforge_version"
 
-	
 	api "blue.endless:jankson:1.2.3"
 	include "blue.endless:jankson:1.2.3"
 }
@@ -23,7 +29,7 @@ dependencies {
 processResources {
 	inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
+	filesMatching("META-INF/neoforge.mods.toml") {
 		expand "version": project.version
 	}
 }
@@ -34,11 +40,17 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
 	//baseName = "Jankson"
 	from "LICENSE"
+	manifest.attributes([
+			"FMLModType": "LIBRARY"
+	])
 }
 
 // configure the maven publication
@@ -51,15 +63,6 @@ publishing {
 
 	// select the repositories you want to publish to
 	repositories {
-		def env = System.getenv()
-		if (env.MAVEN_URL) {
-			maven {
-				url = env.MAVEN_URL
-				credentials {
-					username = env.MAVEN_USERNAME
-					password = env.MAVEN_PASSWORD
-				}
-			}
-		}
+
 	}
 }

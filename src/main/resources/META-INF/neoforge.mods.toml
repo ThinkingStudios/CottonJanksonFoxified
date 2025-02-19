@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "cotton_jackson"
+version = "${version}"
+displayName = "CottonJanksonFoxified"
+displayURL = "https://github.com/ThinkingStudios/CottonJanksonFoxified"
+credits = "Falkreon, The Cotton Project"
+authors = "TexTrue, ThinkingStudio"
+description = '''
+CottonMC's Jankson-Fabric unofficial NeoForge port
+
+A neoforge-mod wrapper for Jankson, packaged with helpful neoforge-specific deserializers!
+'''
+logoFile = "assets/jankson/icon.png"
+
+[[dependencies.cotton_jackson]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cotton_jackson]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.2,)"
+ordering = "NONE"
+side = "BOTH"
