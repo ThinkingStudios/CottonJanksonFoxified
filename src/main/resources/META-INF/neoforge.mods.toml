@@ -20,13 +20,13 @@ logoFile = "assets/jankson/icon.png"
 [[dependencies.cotton_jackson]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.2,)"
+versionRange = "[21,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.cotton_jackson]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.2,)"
+versionRange = "[1.21,)"
 ordering = "NONE"
 side = "BOTH"
