@@ -3,23 +3,24 @@ package io.github.cottonmc.jankson;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.Schedule;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.map.MapDecorationType;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.loot.function.LootFunctionType;
@@ -28,12 +29,10 @@ import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.score.LootScoreProviderType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.potion.Potion;
-import net.minecraft.predicate.item.ItemSubPredicate;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.scoreboard.number.NumberFormatType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.StatType;
@@ -73,6 +72,7 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 
 public class JanksonFactory {
+	@SuppressWarnings("removal")
 	public static Jankson.Builder builder() {
 		Jankson.Builder builder = Jankson.builder();
 				
@@ -80,9 +80,9 @@ public class JanksonFactory {
 			.registerDeserializer(String.class, BlockState.class, BlockAndItemSerializers::getBlockStatePrimitive)
 			.registerDeserializer(JsonObject.class, BlockState.class, BlockAndItemSerializers::getBlockState)
 			.registerSerializer(BlockState.class, BlockAndItemSerializers::saveBlockState);
-		
+
 		builder
-			.registerDeserializer(String.class, Identifier.class, (s, m) -> Identifier.of(s))
+			.registerDeserializer(String.class, Identifier.class, (s, m) -> new Identifier(s))
 			.registerSerializer(Identifier.class, (i,m)->new JsonPrimitive(i.toString()))
 			;
 
@@ -90,7 +90,7 @@ public class JanksonFactory {
 		//Note: specifically excludes dynamic registries since we can't have static access to them.
 		register(builder, Activity.class,                    Registries.ACTIVITY);
 		register(builder, ArgumentSerializer.class,          Registries.COMMAND_ARGUMENT_TYPE);
-		register(builder, ArmorMaterial.class,               Registries.ARMOR_MATERIAL);
+		register(builder, BannerPattern.class,               Registries.BANNER_PATTERN);
 		register(builder, Block.class,                       Registries.BLOCK);
 		register(builder, BlockEntityType.class,             Registries.BLOCK_ENTITY_TYPE);
 		register(builder, BlockPredicateType.class,          Registries.BLOCK_PREDICATE_TYPE);
@@ -98,7 +98,7 @@ public class JanksonFactory {
 		register(builder, Carver.class,                      Registries.CARVER);
 		register(builder, CatVariant.class,                  Registries.CAT_VARIANT);
 		register(builder, ChunkStatus.class,                 Registries.CHUNK_STATUS);
-		register(builder, Criterion.class,                   Registries.CRITERION);
+		register(builder, Enchantment.class,                 Registries.ENCHANTMENT);
 		register(builder, EntityAttribute.class,             Registries.ATTRIBUTE);
 		register(builder, EntityType.class,                  Registries.ENTITY_TYPE);
 		register(builder, Feature.class,                     Registries.FEATURE);
@@ -113,16 +113,14 @@ public class JanksonFactory {
 		register(builder, IntProviderType.class,             Registries.INT_PROVIDER_TYPE);
 		register(builder, Item.class,                        Registries.ITEM);
 		register(builder, ItemGroup.class,                   Registries.ITEM_GROUP);
-		register(builder, ItemSubPredicate.Type.class,       Registries.ITEM_SUB_PREDICATE_TYPE);
 		register(builder, LootConditionType.class,           Registries.LOOT_CONDITION_TYPE);
 		register(builder, LootFunctionType.class,            Registries.LOOT_FUNCTION_TYPE);
 		register(builder, LootNbtProviderType.class,         Registries.LOOT_NBT_PROVIDER_TYPE);
 		register(builder, LootNumberProviderType.class,      Registries.LOOT_NUMBER_PROVIDER_TYPE);
 		register(builder, LootPoolEntryType.class,           Registries.LOOT_POOL_ENTRY_TYPE);
 		register(builder, LootScoreProviderType.class,       Registries.LOOT_SCORE_PROVIDER_TYPE);
-		register(builder, MapDecorationType.class,           Registries.MAP_DECORATION_TYPE);
 		register(builder, MemoryModuleType.class,            Registries.MEMORY_MODULE_TYPE);
-		register(builder, NumberFormatType.class,            Registries.NUMBER_FORMAT_TYPE);
+		register(builder, PaintingVariant.class,             Registries.PAINTING_VARIANT);
 		register(builder, ParticleType.class,                Registries.PARTICLE_TYPE);
 		register(builder, PlacementModifierType.class,       Registries.PLACEMENT_MODIFIER_TYPE);
 		register(builder, PointOfInterestType.class,         Registries.POINT_OF_INTEREST_TYPE);
@@ -158,9 +156,10 @@ public class JanksonFactory {
 		builder.registerDeserializer(String.class, clazz, (s,m)->lookupDeserialize(s, registry));
 		builder.registerSerializer(clazz, (o,m)->lookupSerialize(o, registry));
 	}
-	
+
+	@SuppressWarnings("removal")
 	private static <T> T lookupDeserialize(String s, Registry<T> registry) {
-		return registry.get(Identifier.of(s));
+		return registry.get(new Identifier(s));
 	}
 	
 	private static <T, U extends T> JsonElement lookupSerialize(T t, Registry<U> registry) {
