@@ -63,6 +63,16 @@ publishing {
 
 	// select the repositories you want to publish to
 	repositories {
-
+		maven {
+			name = "cloudsmith"
+			url = "https://maven.cloudsmith.io/thinkingstudio/cottonjanksonfoxified/"
+			def releasesRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/cottonjanksonfoxified/"
+			def snapshotsRepoUrl = "https://maven.cloudsmith.io/thinkingstudio/cottonjanksonfoxified/"
+			url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+			credentials {
+				username = 'tex-true'
+				password = System.getenv("CLOUDSMITH_MAVEN_TOKEN")
+			}
+		}
 	}
 }

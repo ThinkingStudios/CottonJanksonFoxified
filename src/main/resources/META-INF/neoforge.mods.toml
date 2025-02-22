@@ -11,7 +11,7 @@ displayURL = "https://github.com/ThinkingStudios/CottonJanksonFoxified"
 credits = "Falkreon, The Cotton Project"
 authors = "TexTrue, ThinkingStudio"
 description = '''
-CottonMC's Jankson-Fabric unofficial NeoForge port
+CottonMC's Jankson-Fabric unofficial NeoForge port.
 
 A neoforge-mod wrapper for Jankson, packaged with helpful neoforge-specific deserializers!
 '''
